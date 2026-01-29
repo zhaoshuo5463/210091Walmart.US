@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Walmart Shopper Reward</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: #f0f2f5; display: flex; justify-content: center; padding: 10px; }
+        .lp-container { width: 100%; max-width: 400px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.15); text-align: center; }
+        .header { background-color: #0071ce; color: white; padding: 12px; }
+        .header h1 { font-size: 15px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+        .header .amount { font-size: 30px; font-weight: 800; }
+        .content { padding: 20px 15px; }
+        h2 { color: #333; font-size: 20px; margin-bottom: 10px; }
+        .prize-img { width: 85%; border-radius: 10px; margin: 5px 0 15px 0; box-shadow: 0 5px 15px rgba(0,113,206,0.15); }
+        .text-info { font-size: 14px; color: #555; margin-bottom: 20px; line-height: 1.4; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.04); } 100% { transform: scale(1); } }
+        .claim-btn { display: block; width: 100%; background: linear-gradient(180deg, #ffc220 0%, #fdb900 100%); color: #000; font-weight: bold; font-size: 20px; padding: 16px; border-radius: 50px; border: none; cursor: pointer; box-shadow: 0 4px 0 #b38400; animation: pulse 1.5s infinite ease-in-out; transition: all 0.2s ease; outline: none; }
+        .claim-btn.processing { background: #e0e0e0 !important; color: #777 !important; box-shadow: none !important; transform: translateY(2px); animation: none !important; cursor: not-allowed; }
+        .loading-hint { display: none; font-size: 12px; color: #999; margin-top: 10px; }
+        .footer { font-size: 10px; color: #ccc; margin-top: 20px; padding-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="lp-container">
+        <div class="header">
+            <h1>Walmart Shopper Reward</h1>
+            <div class="amount">$750</div>
+        </div>
+
+        <div class="content">
+            <h2>Congratulations!</h2>
+            <img src="walmart-card-hero.webp" alt="Walmart Gift Card" class="prize-img">
+            
+            <p class="text-info">
+                You've been selected to participate.<br>
+                <strong>Complete the survey to claim your card.</strong>
+            </p>
+
+            <button class="claim-btn" id="claimBtn" onclick="startProcess()">CLAIM NOW</button>
+            <p id="loadingHint" class="loading-hint">Processing request, please do not close...</p>
+        </div>
+
+        <div class="footer">
+            © 2026 Walmart Loyalty Program. US Only.
+        </div>
+    </div>
+
+    <script>
+        function startProcess() {
+            const btn = document.getElementById('claimBtn');
+            const hint = document.getElementById('loadingHint');
+
+            // 1. 获取 URL 参数
+            const params = new URLSearchParams(window.location.search);
+            const bbg = params.get('bbg') || '';
+            const pixel_id = params.get('pixel_id') || '';
+            const ad_name = params.get('ad_name') || '';
+            const publisher_id = params.get('publisher_id') || '';
+
+            // 2. 拼接带参数的最终 Offer 链接
+            const baseUrl = "https://flowbox.hotrk0.com/offer?offer_id=210091&aff_id=295";
+            const finalUrl = baseUrl + 
+                "&aff_sub=" + encodeURIComponent(bbg) + 
+                "&aff_sub2=" + encodeURIComponent(pixel_id) + 
+                "&aff_sub3=" + encodeURIComponent(ad_name) + 
+                "&aff_pub=" + encodeURIComponent(publisher_id);
+
+            // 3. UI 状态改变
+            btn.classList.add('processing');
+            hint.style.display = 'block';
+            btn.innerHTML = "Verifying IP...";
+
+            // 4. 执行瞬间跳转（利用自然延迟）
+            window.location.href = finalUrl;
+
+            // 5. 视觉效果切换（在跳转中的窗口期显示）
+            setTimeout(() => {
+                btn.innerHTML = "Checking availability...";
+            }, 800); // 修正了时间顺序，0.8秒切换
+
+            setTimeout(() => {
+                btn.innerHTML = "Validating entry...";
+            }, 1600); // 1.6秒切换
+        }
+    </script>
+</body>
+</html>
