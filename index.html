@@ -49,42 +49,50 @@
     </div>
 
     <script>
-        function startProcess() {
-            const btn = document.getElementById('claimBtn');
-            const hint = document.getElementById('loadingHint');
+    function startProcess() {
+        // 1. 获取必要的 DOM 元素
+        const btn = document.getElementById('claimBtn');
+        const hint = document.getElementById('loadingHint');
+        
+        // 2. 立即锁定按钮，防止重复点击导致逻辑混乱
+        btn.classList.add('processing');
+        btn.disabled = true; 
+        hint.style.display = 'block';
+        btn.innerHTML = "Verifying IP...";
 
-            // 1. 获取 URL 参数
-            const params = new URLSearchParams(window.location.search);
-            const bbg = params.get('bbg') || '';
-            const pixel_id = params.get('pixel_id') || '';
-            const ad_name = params.get('ad_name') || '';
-            const publisher_id = params.get('publisher_id') || '';
+        // 3. 动态获取 URL 参数并拼接
+        const params = new URLSearchParams(window.location.search);
+        const bbg = params.get('bbg') || '';
+        const pixel_id = params.get('pixel_id') || '';
+        const ad_name = params.get('ad_name') || '';
+        const publisher_id = params.get('publisher_id') || '';
 
-            // 2. 拼接带参数的最终 Offer 链接
-            const baseUrl = "https://flowbox.hotrk0.com/offer?offer_id=210091&aff_id=295";
-            const finalUrl = baseUrl + 
-                "&aff_sub=" + encodeURIComponent(bbg) + 
-                "&aff_sub2=" + encodeURIComponent(pixel_id) + 
-                "&aff_sub3=" + encodeURIComponent(ad_name) + 
-                "&aff_pub=" + encodeURIComponent(publisher_id);
+        // 新 Offer 链接
+        const baseUrl = "https://flowbox.hotrk0.com/offer?offer_id=210091&aff_id=295";
+        
+        // 确保使用安全的方式拼接参数
+        const finalUrl = baseUrl + 
+            "&aff_sub=" + encodeURIComponent(bbg) + 
+            "&aff_sub2=" + encodeURIComponent(pixel_id) + 
+            "&aff_sub3=" + encodeURIComponent(ad_name) + 
+            "&aff_pub=" + encodeURIComponent(publisher_id);
 
-            // 3. UI 状态改变
-            btn.classList.add('processing');
-            hint.style.display = 'block';
-            btn.innerHTML = "Verifying IP...";
+        // 4. 视觉效果切换 (仅作为用户心理安慰)
+        setTimeout(() => { btn.innerHTML = "Checking availability..."; }, 800);
+        setTimeout(() => { btn.innerHTML = "Validating entry..."; }, 1600);
 
-            // 4. 执行瞬间跳转（利用自然延迟）
+        // 5. 【核心修复】执行跳转
+        // 给予 100ms 的延迟，让浏览器先处理完 UI 的 Verify 状态，再全速执行跳转
+        setTimeout(function() {
+            console.log("Redirecting to: " + finalUrl);
             window.location.href = finalUrl;
-
-            // 5. 视觉效果切换（在跳转中的窗口期显示）
-            setTimeout(() => {
-                btn.innerHTML = "Checking availability...";
-            }, 800); // 修正了时间顺序，0.8秒切换
-
-            setTimeout(() => {
-                btn.innerHTML = "Validating entry...";
-            }, 1600); // 1.6秒切换
-        }
-    </script>
+            
+            // 兜底方案：如果 500ms 内 location.href 没反应，强制使用 replace
+            setTimeout(function() {
+                window.location.replace(finalUrl);
+            }, 500);
+        }, 100);
+    }
+</script>
 </body>
 </html>
