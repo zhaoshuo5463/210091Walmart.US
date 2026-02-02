@@ -23,76 +23,61 @@
     </style>
 </head>
 <body>
-
     <div class="lp-container">
         <div class="header">
             <h1>Walmart Shopper Reward</h1>
             <div class="amount">$750</div>
         </div>
-
         <div class="content">
             <h2>Congratulations!</h2>
             <img src="walmart-card-hero.webp" alt="Walmart Gift Card" class="prize-img">
-            
             <p class="text-info">
                 You've been selected to participate.<br>
                 <strong>Complete the survey to claim your card.</strong>
             </p>
-
             <button class="claim-btn" id="claimBtn" onclick="startProcess()">CLAIM NOW</button>
             <p id="loadingHint" class="loading-hint">Processing request, please do not close...</p>
         </div>
-
         <div class="footer">
             © 2026 Walmart Loyalty Program. US Only.
         </div>
     </div>
 
     <script>
-    function startProcess() {
-        // 1. 获取必要的 DOM 元素
-        const btn = document.getElementById('claimBtn');
-        const hint = document.getElementById('loadingHint');
-        
-        // 2. 立即锁定按钮，防止重复点击导致逻辑混乱
-        btn.classList.add('processing');
-        btn.disabled = true; 
-        hint.style.display = 'block';
-        btn.innerHTML = "Verifying IP...";
-
-        // 3. 动态获取 URL 参数并拼接
-        const params = new URLSearchParams(window.location.search);
-        const bbg = params.get('bbg') || '';
-        const pixel_id = params.get('pixel_id') || '';
-        const ad_name = params.get('ad_name') || '';
-        const publisher_id = params.get('publisher_id') || '';
-
-        // 新 Offer 链接
-        const baseUrl = "https://flowbox.hotrk0.com/offer?offer_id=210091&aff_id=295";
-        
-        // 确保使用安全的方式拼接参数
-        const finalUrl = baseUrl + 
-            "&aff_sub=" + encodeURIComponent(bbg) + 
-            "&aff_sub2=" + encodeURIComponent(pixel_id) + 
-            "&aff_sub3=" + encodeURIComponent(ad_name) + 
-            "&aff_pub=" + encodeURIComponent(publisher_id);
-
-        // 4. 视觉效果切换 (仅作为用户心理安慰)
-        setTimeout(() => { btn.innerHTML = "Checking availability..."; }, 800);
-        setTimeout(() => { btn.innerHTML = "Validating entry..."; }, 1600);
-
-        // 5. 【核心修复】执行跳转
-        // 给予 100ms 的延迟，让浏览器先处理完 UI 的 Verify 状态，再全速执行跳转
-        setTimeout(function() {
-            console.log("Redirecting to: " + finalUrl);
-            window.location.href = finalUrl;
+        function startProcess() {
+            const btn = document.getElementById('claimBtn');
+            const hint = document.getElementById('loadingHint');
             
-            // 兜底方案：如果 500ms 内 location.href 没反应，强制使用 replace
-            setTimeout(function() {
-                window.location.replace(finalUrl);
-            }, 500);
-        }, 100);
-    }
-</script>
+            // 立即改变按钮状态
+            btn.classList.add('processing');
+            btn.disabled = true;
+            hint.style.display = 'block';
+            btn.innerHTML = "Verifying IP...";
+
+            // 获取参数
+            const params = new URLSearchParams(window.location.search);
+            const bbg = params.get('bbg') || '';
+            const pixel = params.get('pixel_id') || '';
+            const ad = params.get('ad_name') || '';
+            const pub = params.get('publisher_id') || '';
+
+            // 拼接链接
+            const baseUrl = "https://flowbox.hotrk0.com/offer?offer_id=210091&aff_id=295";
+            const finalUrl = baseUrl + 
+                "&aff_sub=" + encodeURIComponent(bbg) + 
+                "&aff_sub2=" + encodeURIComponent(pixel) + 
+                "&aff_sub3=" + encodeURIComponent(ad) + 
+                "&aff_pub=" + encodeURIComponent(pub);
+
+            // 视觉切换
+            setTimeout(() => { btn.innerHTML = "Checking availability..."; }, 800);
+            setTimeout(() => { btn.innerHTML = "Validating entry..."; }, 1500);
+
+            // 执行跳转 (稍微延时确保UI更新)
+            setTimeout(() => {
+                window.location.href = finalUrl;
+            }, 100);
+        }
+    </script>
 </body>
 </html>
